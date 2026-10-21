@@ -1,0 +1,18 @@
+[package]
+name = "jev-router"
+version = "0.3.0"
+edition = "2021"
+license = "MIT"
+description = "Rust port of jev_router.py: Jev decides whether a mid-turn message steers, queues or stops the running task."
+
+[dependencies]
+serde_json = "1"
+ureq = { version = "2.12", default-features = false, features = ["native-tls"] }
+native-tls = "0.2"
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+codegen-units = 1
+panic = "abort"

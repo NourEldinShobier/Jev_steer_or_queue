@@ -1,0 +1,17 @@
+{
+  "upstream": "https://github.com/Larkspur-Wang/Jev_steer_or_queue",
+  "branch": "main",
+  "synced_commit": "3924e8841d6ef8d853d6eb22b7283541cf3d6357",
+  "synced_version": "0.2.0",
+  "synced_on": "2026-10-21",
+  "our_changes": [
+    "claude-code/router/: Rust port of scripts/jev_router.py (same Jev questions, thresholds and state files); ~90 ms per hook vs ~350 ms for Python on Windows, and it runs on Windows",
+    "claude-code/scripts/run.sh: hooks run the Rust router when fetched, else the Python one",
+    "claude-code/scripts/fetch-router.sh + SessionStart hook: download the router binary for this plugin version from this fork's releases",
+    "claude-code/scripts/jev_router.py: Windows file locking (msvcrt) when fcntl is missing; upstream crashed on every hook on Windows",
+    "User-facing messages from the Rust router are in English (upstream: Chinese); the Jev question text is unchanged",
+    ".github/workflows/release.yml: builds and tests the router on Windows, macOS (arm64, x64) and Linux; tags attach binaries to the release",
+    "plugin.json: version 0.3.0, repository and homepage point at this fork"
+  ],
+  "how_to_sync": "git fetch upstream && git merge upstream/main; port any change to scripts/jev_router.py into router/src/main.rs; then update synced_commit, synced_version and synced_on"
+}

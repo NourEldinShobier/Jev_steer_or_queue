@@ -3,3 +3,4 @@ __pycache__/
 .DS_Store
 *.log
 log.jsonl
+claude-code/router/target/

@@ -16,7 +16,6 @@ Standard library only; Python 3.8+.
 """
 from __future__ import annotations
 
-import fcntl
 import json
 import os
 import sys
@@ -24,6 +23,23 @@ import time
 import urllib.error
 import urllib.request
 from typing import Any, Dict, List, Optional
+
+try:  # POSIX
+    import fcntl
+
+    def lock_file(fh: Any) -> None:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+except ImportError:  # Windows has no fcntl
+    import msvcrt
+
+    def lock_file(fh: Any) -> None:
+        fh.seek(0)
+        while True:
+            try:
+                msvcrt.locking(fh.fileno(), msvcrt.LK_LOCK, 1)
+                return
+            except OSError:  # LK_LOCK gives up after ~10 s; keep waiting like flock
+                continue
 
 DEFAULT_URL = "https://api.typesafe.ai/v1/systemone"
 MAX_MESSAGE_CHARS = 2000
@@ -82,8 +98,8 @@ class Session:
         base = os.path.join(root, "sessions", safe)
         self.state_path = base + ".json"
         self.queue_path = base + ".queue.jsonl"
-        self._lock = open(base + ".lock", "a")
-        fcntl.flock(self._lock, fcntl.LOCK_EX)
+        self._lock = open(base + ".lock", "a+")
+        lock_file(self._lock)
 
     def load(self) -> Dict[str, Any]:
         try:
